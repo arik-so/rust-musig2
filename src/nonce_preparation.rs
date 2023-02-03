@@ -23,12 +23,10 @@ pub fn aggregate_nonces<N: Borrow<PublicNonce>>(nonces: &[N]) -> PublicNonce {
 	PublicNonce(first_nonce, second_nonce)
 }
 
-pub(crate) fn calculate_final_nonce(aggregate_nonce: &PublicNonce, aggregate_public_key: &AggregateKey, message: &[u8]) -> (PublicKey, Scalar) {
-	let secp = Secp256k1::new();
-
+pub(crate) fn calculate_final_nonce<C: bitcoin::secp256k1::Verification>(aggregate_nonce: &PublicNonce, aggregate_public_key: &AggregateKey, message: &[u8], secp_context: &Secp256k1<C>) -> (PublicKey, Scalar) {
 	let nonce_coefficient = nonce_linear_combination_coefficient(&aggregate_public_key.0, &aggregate_nonce, message);
-	let nonce_summand = aggregate_nonce.1.mul_tweak(&secp, &nonce_coefficient).unwrap();
-	let public_nonce = PublicKey::combine_keys(vec![&aggregate_nonce.0, &nonce_summand].as_slice()).unwrap();
+	let nonce_summand = aggregate_nonce.1.mul_tweak(&secp_context, &nonce_coefficient).unwrap();
+	let public_nonce = PublicKey::combine_keys(&[&aggregate_nonce.0, &nonce_summand]).unwrap();
 	(public_nonce, nonce_coefficient)
 }
 

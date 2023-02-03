@@ -14,15 +14,24 @@ pub struct SecretNonce(pub(crate) SecretKey, pub(crate) SecretKey);
 pub(crate) type AggregateKey = (XOnlyPublicKey, Parity);
 pub(crate) type PartialSignature = SecretKey;
 
+/// A pubkey container that discriminates between preördered and sortable keys
+pub enum SignerPublicKeys {
+	/// These keys are ordered a priori
+	Ordered(Vec<PublicKey>),
+	/// These keys may or may not be ordered. Usage will automatically result in sorting.
+	ToSort(Vec<PublicKey>)
+}
+
 impl SecretNonce {
-    pub fn to_public(&self) -> PublicNonce {
-        let secp = Secp256k1::new();
+	/// Convert to public
+    pub fn to_public<C: bitcoin::secp256k1::Signing>(&self, secp_context: &Secp256k1<C>) -> PublicNonce {
         PublicNonce(
-            PublicKey::from_secret_key(&secp, &self.0),
-            PublicKey::from_secret_key(&secp, &self.1),
+			PublicKey::from_secret_key(&secp_context, &self.0),
+			PublicKey::from_secret_key(&secp_context, &self.1),
         )
     }
 
+	/// Serialize the two private keys contained within
     pub fn serialize(&self) -> [u8; 64] {
         let mut serialization = [0; 64];
         let (first, second) = serialization.split_at_mut(32);
@@ -31,6 +40,7 @@ impl SecretNonce {
         serialization
     }
 
+	/// Deserialize from bytes
     pub fn from_slice(data: &[u8]) -> Result<SecretNonce, bitcoin::secp256k1::Error> {
         assert_eq!(data.len(), 64, "SecretNonce can only be read from exactly 64 bytes");
         let first = SecretKey::from_slice(&data[0..32])?;
@@ -45,13 +55,8 @@ impl SecretNonce {
     }
 }
 
-impl Into<PublicNonce> for SecretNonce {
-    fn into(self) -> PublicNonce {
-        self.to_public()
-    }
-}
-
 impl PublicNonce {
+	/// Serialize the two public keys contained within
     pub fn serialize(&self) -> [u8; 66] {
         let mut serialization = [0; 66];
         let (first, second) = serialization.split_at_mut(33);
@@ -60,6 +65,7 @@ impl PublicNonce {
         serialization
     }
 
+	/// Deserialize from bytes
     pub fn from_slice(data: &[u8]) -> Result<PublicNonce, bitcoin::secp256k1::Error> {
         assert_eq!(data.len(), 66, "SecretNonce can only be read from exactly 66 bytes");
         let first = PublicKey::from_slice(&data[0..33])?;
