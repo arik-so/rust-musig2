@@ -73,9 +73,23 @@ impl PublicNonce {
 
 	/// Deserialize from bytes
     pub fn from_slice(data: &[u8]) -> Result<PublicNonce, bitcoin::secp256k1::Error> {
-        assert_eq!(data.len(), 66, "SecretNonce can only be read from exactly 66 bytes");
+        assert_eq!(data.len(), 66, "PublicNonce can only be read from exactly 66 bytes");
         let first = PublicKey::from_slice(&data[0..33])?;
         let second = PublicKey::from_slice(&data[33..66])?;
         Ok(Self(first, second))
     }
+}
+
+impl PartialSignature {
+	/// Serialize the scalar contained within
+	pub fn serialize(&self) -> [u8; 32] {
+		self.0.secret_bytes()
+	}
+
+	/// Deserialize from bytes
+	pub fn from_slice(data: &[u8]) -> Result<PartialSignature, bitcoin::secp256k1::Error> {
+		assert_eq!(data.len(), 32, "PartialSignature can only be read from exactly 32 bytes");
+		let secret_key = SecretKey::from_slice(data)?;
+		Ok(Self(secret_key))
+	}
 }
