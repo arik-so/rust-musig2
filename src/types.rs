@@ -18,6 +18,7 @@ pub struct AggregateKey {
 }
 
 /// A partial MuSig2 signature
+#[derive(Clone, Debug, PartialEq)]
 pub struct PartialSignature(pub(crate) SecretKey);
 
 /// A pubkey container that discriminates between preördered and sortable keys
