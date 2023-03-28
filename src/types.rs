@@ -4,11 +4,11 @@ use bitcoin::secp256k1::{Parity, PublicKey, Secp256k1, SecretKey};
 use bitcoin::XOnlyPublicKey;
 
 /// A public nonce used for Musig2, comprised of two ECPoints
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PublicNonce(pub(crate) PublicKey, pub(crate) PublicKey);
 
 /// A secret nonce used for Musig2, comprised of two SecretKeys
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SecretNonce(pub(crate) SecretKey, pub(crate) SecretKey);
 
 /// A type representing an aggregated public key for MuSig2 use
@@ -18,7 +18,7 @@ pub struct AggregateKey {
 }
 
 /// A partial MuSig2 signature
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PartialSignature(pub(crate) SecretKey);
 
 /// A pubkey container that discriminates between preördered and sortable keys
