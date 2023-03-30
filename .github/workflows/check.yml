@@ -8,7 +8,11 @@ on:
 
 jobs:
     test-library:
+        name: Test Library in ${{ matrix.release && 'Release' || 'Debug' }} Configuration
         runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                release: [ false, true ]
         env:
             TOOLCHAIN: stable
         steps:
@@ -21,10 +25,18 @@ jobs:
                     override: true
                     profile: minimal
             -   name: Build
-                run: cargo build --verbose --color always
+                run: cargo build --verbose --color always $RELEASE_SUFFIX
+                env:
+                    RELEASE_SUFFIX: ${{ matrix.release && '--release' || '' }}
             -   name: Test
-                run: cargo test --verbose --color always
+                run: cargo test --verbose --color always $RELEASE_SUFFIX
+                env:
+                    RELEASE_SUFFIX: ${{ matrix.release && '--release' || '' }}
             -   name: Document
-                run: cargo doc --document-private-items --verbose --color always
+                run: cargo doc --document-private-items --verbose --color always $RELEASE_SUFFIX
+                env:
+                    RELEASE_SUFFIX: ${{ matrix.release && '--release' || '' }}
             -   name: Check
-                run: cargo check --verbose --color always
+                run: cargo check --verbose --color always $RELEASE_SUFFIX
+                env:
+                    RELEASE_SUFFIX: ${{ matrix.release && '--release' || '' }}
