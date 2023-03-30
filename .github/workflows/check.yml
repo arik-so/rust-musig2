@@ -8,20 +8,19 @@ on:
 
 jobs:
     test-library:
-        name: Test Library in ${{ matrix.release && 'Release' || 'Debug' }} Configuration
+        name: Rust ${{ matrix.rust-toolchain }} in ${{ matrix.release && 'Release' || 'Debug' }} Config
         runs-on: ubuntu-latest
         strategy:
             matrix:
                 release: [ false, true ]
-        env:
-            TOOLCHAIN: stable
+                rust-toolchain: [ 'stable', '1.48.0' ]
         steps:
             -   name: Checkout source code
                 uses: actions/checkout@v3
             -   name: Install Rust ${{ matrix.toolchain }} toolchain
                 uses: actions-rs/toolchain@v1
                 with:
-                    toolchain: stable
+                    toolchain: ${{ matrix.rust-toolchain }}
                     override: true
                     profile: minimal
             -   name: Build

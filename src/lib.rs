@@ -7,8 +7,8 @@
 #![deny(unused_variables)]
 #![deny(unused_imports)]
 #![deny(warnings)]
-#![deny(rustdoc::broken_intra_doc_links)]
-#![deny(rustdoc::private_intra_doc_links)]
+#![deny(broken_intra_doc_links)]
+#![deny(private_intra_doc_links)]
 
 //! Experimental crate implementing partial MuSig2 functions. Key tweaking is not supported.
 
