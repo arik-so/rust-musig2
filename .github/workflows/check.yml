@@ -8,20 +8,25 @@ on:
 
 jobs:
     test-library:
-        name: Test Library in ${{ matrix.release && 'Release' || 'Debug' }} Configuration
-        runs-on: ubuntu-latest
+        name: os:${{ matrix.os.name }} | rust:${{ matrix.rust-toolchain }} | config:${{ matrix.release && 'release' || 'debug' }}
         strategy:
             matrix:
                 release: [ false, true ]
-        env:
-            TOOLCHAIN: stable
+                rust-toolchain: [ 'stable', '1.48.0' ]
+                os:
+                    - { name: 'Linux', identifier: 'ubuntu-latest' }
+                    - { name: 'Mac', identifier: 'macos-latest' }
+                    - { name: 'Windows', identifier: 'windows-latest' }
+                exclude:
+                    - { os: { identifier: 'macos-latest' }, rust-toolchain: '1.48.0' }
+        runs-on: ${{ matrix.os.identifier }}
         steps:
             -   name: Checkout source code
                 uses: actions/checkout@v3
             -   name: Install Rust ${{ matrix.toolchain }} toolchain
                 uses: actions-rs/toolchain@v1
                 with:
-                    toolchain: stable
+                    toolchain: ${{ matrix.rust-toolchain }}
                     override: true
                     profile: minimal
             -   name: Build
