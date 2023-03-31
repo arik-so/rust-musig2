@@ -8,12 +8,18 @@ on:
 
 jobs:
     test-library:
-        name: rust:${{ matrix.rust-toolchain }} | config:${{ matrix.release && 'release' || 'debug' }}
-        runs-on: ubuntu-latest
+        name: os:${{ matrix.os.name }} | rust:${{ matrix.rust-toolchain }} | config:${{ matrix.release && 'release' || 'debug' }}
         strategy:
             matrix:
                 release: [ false, true ]
                 rust-toolchain: [ 'stable', '1.48.0' ]
+                os:
+                    - { name: 'Linux', identifier: 'ubuntu-latest' }
+                    - { name: 'Mac', identifier: 'macos-latest' }
+                    - { name: 'Windows', identifier: 'windows-latest' }
+                exclude:
+                    - { os: { identifier: 'macos-latest' }, rust-toolchain: '1.48.0' }
+        runs-on: ${{ matrix.os.identifier }}
         steps:
             -   name: Checkout source code
                 uses: actions/checkout@v3
