@@ -1,7 +1,7 @@
 use std::borrow::Borrow;
 
 use bitcoin::secp256k1::{PublicKey, Scalar, Secp256k1};
-use bitcoin::XOnlyPublicKey;
+use bitcoin::key::XOnlyPublicKey;
 
 use crate::{AggregateKey, PublicNonce, tagged_hash_scalar};
 

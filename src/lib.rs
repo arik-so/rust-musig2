@@ -113,7 +113,7 @@ fn verify_partial_signature_with_ordered_keys<K: Borrow<PublicKey>, C: bitcoin::
 
 
 fn tagged_sha_engine(tag: &str) -> ShaEngine {
-	let tag_hash = Sha256::hash(tag.as_bytes()).into_inner();
+	let tag_hash = Sha256::hash(tag.as_bytes()).to_byte_array();
 	let mut sha_engine = Sha256::engine();
 	sha_engine.input(&tag_hash);
 	sha_engine.input(&tag_hash);
@@ -125,7 +125,7 @@ fn tagged_hash_scalar(tag: &str, inputs: &[&[u8]]) -> Scalar {
 	for current_input in inputs {
 		sha_engine.input(current_input);
 	}
-	let output_hash = Sha256::from_engine(sha_engine).into_inner();
+	let output_hash = Sha256::from_engine(sha_engine).to_byte_array();
 	Scalar::from_be_bytes(output_hash)
 		.expect("SHA256 appears to be broken due to the heat death of the universe. If the user has a cat, please make sure to kill it.")
 }
@@ -133,7 +133,7 @@ fn tagged_hash_scalar(tag: &str, inputs: &[&[u8]]) -> Scalar {
 
 #[cfg(test)]
 mod tests {
-	use bitcoin::XOnlyPublicKey;
+	use bitcoin::key::XOnlyPublicKey;
 
 	use crate::key_preparation::aggregate_keys;
 	use crate::nonce_preparation::aggregate_nonces;
@@ -141,7 +141,7 @@ mod tests {
 	use super::*;
 
 	fn verify_schnorr_signature(signature: &Signature, public_key: &PublicKey, message: &[u8]) -> bool {
-		assert_eq!(signature.len(), 64);
+		assert_eq!(signature.as_ref().len(), 64);
 
 		let nonce_x = &signature[..32];
 		let s = &signature[32..];
