@@ -61,7 +61,7 @@ fn hash_keys<K: Borrow<PublicKey>>(sorted_keys: &[K]) -> [u8; 32] {
 	for current_key in sorted_keys {
 		sha_engine.input(&current_key.borrow().serialize());
 	}
-	Sha256::from_engine(sha_engine).into_inner()
+	Sha256::from_engine(sha_engine).to_byte_array()
 }
 
 fn second_key_serialization<K: Borrow<PublicKey>>(ordered_keys: &[K]) -> [u8; 33] {

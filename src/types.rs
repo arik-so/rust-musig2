@@ -1,15 +1,24 @@
 //! Types used exclusively for MuSig2 shenanigans
 
 use bitcoin::secp256k1::{Parity, PublicKey, Secp256k1, SecretKey};
-use bitcoin::XOnlyPublicKey;
+use bitcoin::key::XOnlyPublicKey;
+
+use core::hash::{Hash, Hasher};
 
 /// A public nonce used for Musig2, comprised of two ECPoints
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct PublicNonce(pub(crate) PublicKey, pub(crate) PublicKey);
 
 /// A secret nonce used for Musig2, comprised of two SecretKeys
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SecretNonce(pub(crate) SecretKey, pub(crate) SecretKey);
+
+impl Hash for SecretNonce {
+	fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.secret_bytes().hash(state);
+        self.1.secret_bytes().hash(state);
+    }
+}
 
 /// A type representing an aggregated public key for MuSig2 use
 pub struct AggregateKey {
@@ -18,8 +27,14 @@ pub struct AggregateKey {
 }
 
 /// A partial MuSig2 signature
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PartialSignature(pub(crate) SecretKey);
+
+impl Hash for PartialSignature {
+	fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.secret_bytes().hash(state);
+    }
+}
 
 /// A pubkey container that discriminates between preördered and sortable keys
 pub enum SignerPublicKeys {
@@ -92,5 +107,13 @@ impl PartialSignature {
 		assert_eq!(data.len(), 32, "PartialSignature can only be read from exactly 32 bytes");
 		let secret_key = SecretKey::from_slice(data)?;
 		Ok(Self(secret_key))
+	}
+}
+
+mod tests {
+	#[test]
+	fn test_public_types_derives() {
+		#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+		struct Foo(super::PublicNonce, super::SecretNonce, super::PartialSignature);
 	}
 }
