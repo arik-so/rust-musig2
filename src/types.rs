@@ -113,6 +113,7 @@ impl PartialSignature {
 mod tests {
 	#[test]
 	fn test_public_types_derives() {
+		#[allow(unused)]
 		#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 		struct Foo(super::PublicNonce, super::SecretNonce, super::PartialSignature);
 	}
