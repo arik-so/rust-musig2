@@ -17,8 +17,6 @@ jobs:
                     - { name: 'Linux', identifier: 'ubuntu-latest' }
                     - { name: 'Mac', identifier: 'macos-latest' }
                     - { name: 'Windows', identifier: 'windows-latest' }
-                exclude:
-                    - { os: { identifier: 'macos-latest' }, rust-toolchain: '1.48.0' }
         runs-on: ${{ matrix.os.identifier }}
         steps:
             -   name: Checkout source code
