@@ -12,7 +12,7 @@ jobs:
         strategy:
             matrix:
                 release: [ false, true ]
-                rust-toolchain: [ 'stable', '1.48.0' ]
+                rust-toolchain: [ 'stable', '1.63.0' ]
                 os:
                     - { name: 'Linux', identifier: 'ubuntu-latest' }
                     - { name: 'Mac', identifier: 'macos-latest' }
