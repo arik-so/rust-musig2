@@ -27,6 +27,10 @@ jobs:
                     toolchain: ${{ matrix.rust-toolchain }}
                     override: true
                     profile: minimal
+            -   name: Pin dependencies
+                if: ${{ matrix.rust-toolchain == '1.63.0' && matrix.os.identifier == 'windows-latest' }}
+                run: |
+                  cargo update -p cc --precise "1.0.28" --verbose
             -   name: Build
                 run: cargo build --verbose --color always $RELEASE_SUFFIX
                 env:
